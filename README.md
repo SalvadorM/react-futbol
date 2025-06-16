@@ -22,3 +22,11 @@ A dynamic 3D soccer field built with **React** and **React Three Fiber** to visu
 - Interactive team builder for fans and content creators
 
 ## 🚀 Getting Started
+
+
+---
+
+Turn GLTF assets into declarative and re-usable react-three-fiber JSX components, cd into /gltf_exports
+```bash
+  npx gltfjsx model.gltf --transform
+```

@@ -20,4 +20,4 @@ export function SoccerField(props) {
   )
 }
 
-// useGLTF.preload('/SoccerField-transformed.glb')
+useGLTF.preload('./src/gltf_exports/SoccerField-transformed.glb')

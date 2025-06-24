@@ -39,7 +39,8 @@ export function SoccerPlayerIdle({position, number, ...props}) {
         {/* Player Number */}
         {number && (
           <Text
-            position={[0, 0.4, 0]} // Position text slightly above the sphere
+            position={[0, 3, 0]} // Position text slightly above the sphere
+            rotation={[0,- Math.PI, 0]}
             fontSize={0.2}
             color="white"
             anchorX="center"

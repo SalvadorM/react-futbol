@@ -33,6 +33,8 @@ const SoccerField3D = ({ formation }) => {
                   enableDamping={true} // Enable damping for smooth camera movement
                   dampingFactor={0.05} // Set the damping factor
                   maxPolarAngle={Math.PI / 2 - 0.1} // Prevent camera from going below ground
+                    minDistance={30} // 🚫 Can't zoom in closer than 20 units
+                    maxDistance={80} // 🚫 Can't zoom out farther than 80 units
                 />
         </Suspense>
     </Canvas>

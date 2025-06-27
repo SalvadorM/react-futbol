@@ -12,10 +12,10 @@ export function SoccerField(props) {
   return (
     <group {...props} dispose={null}>
       <group position={[0, 1.174, -32.177]} rotation={[-Math.PI, 0, -Math.PI]} scale={[2.639, 1.033, 1.417]}>
-        <mesh geometry={nodes.Cube006.geometry} material={materials.White} />
-        <mesh geometry={nodes.Cube006_1.geometry} material={materials.Net} />
+        <mesh receiveShadow geometry={nodes.Cube006.geometry} material={materials.White} />
+        <mesh receiveShadow geometry={nodes.Cube006_1.geometry} material={materials.Net} />
       </group>
-      <mesh geometry={nodes.Soccer_Field.geometry} material={materials.Green} position={[0, 0.001, 0]} rotation={[-Math.PI, 0, -Math.PI]} scale={[9.311, 1, 5.288]} />
+      <mesh receiveShadow  geometry={nodes.Soccer_Field.geometry} material={materials.Green} position={[0, 0.001, 0]} rotation={[-Math.PI, 0, -Math.PI]} scale={[9.311, 1, 5.288]} />
     </group>
   )
 }

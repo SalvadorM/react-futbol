@@ -12,10 +12,16 @@ const SoccerField3D = ({ formation }) => {
     const currentFormation = formationPositions[formation] || [];
 
     return(
-    <Canvas camera={{ position: [0, 50, 80], fov: 30 }}>
+    <Canvas shadows camera={{ position: [0, 50, 80], fov: 30 }}>
         <Suspense fallback={null}>
             <ambientLight intensity={0.5} />
-            <directionalLight position={[10, 10, 5]} />
+            <directionalLight 
+            position={[10, 10, 5]} 
+            intensity={1}
+            castShadow
+  shadow-bias={-0.005}
+        
+            />
                 {/* Soccer Field */}
 
                 <group>
@@ -33,8 +39,8 @@ const SoccerField3D = ({ formation }) => {
                   enableDamping={true} // Enable damping for smooth camera movement
                   dampingFactor={0.05} // Set the damping factor
                   maxPolarAngle={Math.PI / 2 - 0.1} // Prevent camera from going below ground
-                    minDistance={30} // 🚫 Can't zoom in closer than 20 units
-                    maxDistance={80} // 🚫 Can't zoom out farther than 80 units
+                  minDistance={30} // 🚫 Can't zoom in closer than 20 units
+                  maxDistance={80} // 🚫 Can't zoom out farther than 80 units
                 />
         </Suspense>
     </Canvas>

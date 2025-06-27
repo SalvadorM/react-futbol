@@ -4,20 +4,27 @@ Command: npx gltfjsx@6.5.3 Idle.gltf --transform
 Files: Idle.gltf [90.53KB] > /Users/ale/Clients/react-futbol/src/gltf_exports/Idle-transformed.glb [340.66KB] (-276%)
 */
 
-import React, {useEffect, useRef } from 'react'
-import { useGraph, useFrame } from '@react-three/fiber'
-import { useGLTF, useAnimations, Text } from '@react-three/drei'
+import {useEffect, useRef, useMemo } from 'react'
+import { useGraph } from '@react-three/fiber'
+import { useGLTF, useAnimations, Text, Decal} from '@react-three/drei'
 import { SkeletonUtils } from 'three-stdlib'
 import { useSpring, a } from '@react-spring/three'
+import * as THREE from 'three'
+
 
 
 export function SoccerPlayerIdle({position, number, ...props}) {
   const group = useRef()
-  const { scene, animations } = useGLTF('/Idle-transformed.glb')
-  const clone = React.useMemo(() => SkeletonUtils.clone(scene), [scene])
-  const { nodes, materials } = useGraph(clone)
+  const { scene, animations, materials } = useGLTF('/Idle-transformed.glb')
+  // ✅ Clone GLTF only when loaded
+  const clone = useMemo(() => (scene ? SkeletonUtils.clone(scene) : null), [scene])
+
+  
+  const { nodes } = useGraph(clone)
   const { actions , names} = useAnimations(animations, group)
 
+console.log(`Player #${number} material UUID:`, nodes.Man.material.uuid)
+console.log(`Player ${number} render`, scene ? '✅ Loaded' : '⏳ Loading')
 
   // 🌀 Animate position with spring
   const { pos } = useSpring({
@@ -29,17 +36,34 @@ export function SoccerPlayerIdle({position, number, ...props}) {
     actions[names[0]].reset().fadeIn(0.3).play()
   }, [actions, names])
 
+  // ✅ Early return AFTER hooks
+  if (!clone || !nodes.Man) return null
+
+  nodes.Man.material = new THREE.MeshStandardMaterial({ color: '#1e3a8a' })
+  nodes.Man.material.needsUpdate = true
+    // Enable shadows
+    nodes.Man.castShadow = true
+    nodes.Man.receiveShadow = true
+
+
+
+
   return (
     <a.group ref={group} position={pos} {...props} dispose={null} rotation={[0, Math.PI, 0]} >
       <group name="Scene">
+
         <group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
           <primitive object={nodes.mixamorigHips} />
         </group>
-        <skinnedMesh name="Man" geometry={nodes.Man.geometry} material={materials.Man_mtl} skeleton={nodes.Man.skeleton} rotation={[Math.PI / 2, 0, 0]} scale={0.01} />
+
+        <skinnedMesh   castShadow receiveShadow name="Man" geometry={nodes.Man.geometry} material={materials.material} skeleton={nodes.Man.skeleton} rotation={[Math.PI / 2, 0, 0]} scale={0.1} >
+          {/* <meshStandardMaterial color="#1e3a8a" /> */}
+        </skinnedMesh>
+
         {/* Player Number */}
         {number && (
           <Text
-            position={[0, 3, 0]} // Position text slightly above the sphere
+            position={[0, 2.8, 0]} // Position text slightly above the sphere
             rotation={[0,- Math.PI, 0]}
             fontSize={0.2}
             color="white"
@@ -49,6 +73,7 @@ export function SoccerPlayerIdle({position, number, ...props}) {
             {number}
           </Text>
         )}
+
       </group>
     </a.group>
   )

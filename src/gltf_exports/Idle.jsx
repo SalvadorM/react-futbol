@@ -5,8 +5,8 @@ Files: Idle.gltf [90.53KB] > /Users/ale/Clients/react-futbol/src/gltf_exports/Id
 */
 
 import {useEffect, useRef, useMemo } from 'react'
-import { useGraph, useLoader } from '@react-three/fiber'
-import { useGLTF, useAnimations, Text, Text3D } from '@react-three/drei'
+import { useGraph, useLoader, useThree, useFrame } from '@react-three/fiber'
+import { useGLTF, useAnimations, Text3D } from '@react-three/drei'
 import { SkeletonUtils } from 'three-stdlib'
 import { useSpring, a } from '@react-spring/three'
 import { TextureLoader } from 'three'
@@ -15,11 +15,16 @@ import { TextureLoader } from 'three'
 
 export function SoccerPlayerIdle({position, number, ...props}) {
   const group = useRef()
+  const textRef = useRef()
   const { scene, animations, materials } = useGLTF('/Idle-transformed.glb')
   // ✅ Clone GLTF only when loaded
   const clone = useMemo(() => (scene ? SkeletonUtils.clone(scene) : null), [scene])
 
   const numberColorMap = useLoader(TextureLoader , '/161B1F_C7E0EC_90A5B3_7B8C9B.png')
+  const skinColorMap = useLoader(TextureLoader , '/1A2461_3D70DB_2C3C8F_2C6CAC.png')
+
+  const { camera } = useThree()
+
   const { nodes } = useGraph(clone)
   const { actions , names} = useAnimations(animations, group)
 
@@ -33,6 +38,9 @@ export function SoccerPlayerIdle({position, number, ...props}) {
     actions[names[0]].reset().fadeIn(0.3).play()
   }, [actions, names])
 
+
+
+  console.log( nodes.Man.geometry.attributes.uv, numberColorMap )
   return (
     <a.group ref={group} position={pos} {...props} dispose={null} rotation={[0, Math.PI, 0]} >
       <group name="Scene">
@@ -41,13 +49,20 @@ export function SoccerPlayerIdle({position, number, ...props}) {
           <primitive object={nodes.mixamorigHips} />
         </group>
 
-        <skinnedMesh   castShadow receiveShadow name="Man" geometry={nodes.Man.geometry} material={materials.Man_mtl} skeleton={nodes.Man.skeleton} rotation={[Math.PI / 2, 0, 0]} scale={0.1} >
-          <meshStandardMaterial map={numberColorMap} />
+        <skinnedMesh 
+          name="Man"
+          geometry={nodes.Man.geometry} 
+          // material={materials.Man_mtl} 
+          skeleton={nodes.Man.skeleton} 
+          rotation={[Math.PI / 2, 0, 0]} 
+          scale={0.1} >
+            <meshMatcapMaterial matcap={skinColorMap} skinning />
         </skinnedMesh>
 
         {/* Player Number */}
         {number && (
           <Text3D
+          ref={textRef}
             position={[.4, 2.6, -.02]} // Position text slightly above the sphere
             rotation={[0,- Math.PI, 0]}
             fontSize={0.05}
@@ -59,7 +74,7 @@ export function SoccerPlayerIdle({position, number, ...props}) {
             // anchorY="middle"
           >
             {number}
-                 <meshStandardMaterial color="white" map={numberColorMap} />
+                 <meshMatcapMaterial matcap={numberColorMap} />
           </Text3D>
         )}
 

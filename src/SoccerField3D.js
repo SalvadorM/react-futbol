@@ -9,21 +9,20 @@ import {SoccerField} from './gltf_exports/SoccerField'
 import { formationPositions } from './formations'
 
 const SoccerField3D = ({ formation }) => {
+
+
     const currentFormation = formationPositions[formation] || [];
 
-    return(
-    <Canvas shadows camera={{ position: [0, 50, 80], fov: 30 }}>
+    return( 
+    <Canvas camera={{ position: [0, 50, 80], fov: 30 }}>
         <Suspense fallback={null}>
             <ambientLight intensity={0.5} />
             <directionalLight 
-            position={[10, 10, 5]} 
-            intensity={1}
-            castShadow
-  shadow-bias={-0.005}
-        
-            />
-                {/* Soccer Field */}
-
+              position={[10, 10, 5]} 
+              intensity={1}
+              />
+              
+              {/* Soccer Field */}
                 <group>
                   <SoccerField />
                 </group>
@@ -42,6 +41,7 @@ const SoccerField3D = ({ formation }) => {
                   minDistance={30} // 🚫 Can't zoom in closer than 20 units
                   maxDistance={80} // 🚫 Can't zoom out farther than 80 units
                 />
+                
         </Suspense>
     </Canvas>
     )

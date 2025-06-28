@@ -5,11 +5,11 @@ Files: Idle.gltf [90.53KB] > /Users/ale/Clients/react-futbol/src/gltf_exports/Id
 */
 
 import {useEffect, useRef, useMemo } from 'react'
-import { useGraph } from '@react-three/fiber'
-import { useGLTF, useAnimations, Text, Decal} from '@react-three/drei'
+import { useGraph, useLoader } from '@react-three/fiber'
+import { useGLTF, useAnimations, Text, Text3D } from '@react-three/drei'
 import { SkeletonUtils } from 'three-stdlib'
 import { useSpring, a } from '@react-spring/three'
-import * as THREE from 'three'
+import { TextureLoader } from 'three'
 
 
 
@@ -19,12 +19,9 @@ export function SoccerPlayerIdle({position, number, ...props}) {
   // ✅ Clone GLTF only when loaded
   const clone = useMemo(() => (scene ? SkeletonUtils.clone(scene) : null), [scene])
 
-  
+  const numberColorMap = useLoader(TextureLoader , '/161B1F_C7E0EC_90A5B3_7B8C9B.png')
   const { nodes } = useGraph(clone)
   const { actions , names} = useAnimations(animations, group)
-
-console.log(`Player #${number} material UUID:`, nodes.Man.material.uuid)
-console.log(`Player ${number} render`, scene ? '✅ Loaded' : '⏳ Loading')
 
   // 🌀 Animate position with spring
   const { pos } = useSpring({
@@ -36,18 +33,6 @@ console.log(`Player ${number} render`, scene ? '✅ Loaded' : '⏳ Loading')
     actions[names[0]].reset().fadeIn(0.3).play()
   }, [actions, names])
 
-  // ✅ Early return AFTER hooks
-  if (!clone || !nodes.Man) return null
-
-  nodes.Man.material = new THREE.MeshStandardMaterial({ color: '#1e3a8a' })
-  nodes.Man.material.needsUpdate = true
-    // Enable shadows
-    nodes.Man.castShadow = true
-    nodes.Man.receiveShadow = true
-
-
-
-
   return (
     <a.group ref={group} position={pos} {...props} dispose={null} rotation={[0, Math.PI, 0]} >
       <group name="Scene">
@@ -56,22 +41,26 @@ console.log(`Player ${number} render`, scene ? '✅ Loaded' : '⏳ Loading')
           <primitive object={nodes.mixamorigHips} />
         </group>
 
-        <skinnedMesh   castShadow receiveShadow name="Man" geometry={nodes.Man.geometry} material={materials.material} skeleton={nodes.Man.skeleton} rotation={[Math.PI / 2, 0, 0]} scale={0.1} >
-          {/* <meshStandardMaterial color="#1e3a8a" /> */}
+        <skinnedMesh   castShadow receiveShadow name="Man" geometry={nodes.Man.geometry} material={materials.Man_mtl} skeleton={nodes.Man.skeleton} rotation={[Math.PI / 2, 0, 0]} scale={0.1} >
+          <meshStandardMaterial map={numberColorMap} />
         </skinnedMesh>
 
         {/* Player Number */}
         {number && (
-          <Text
-            position={[0, 2.8, 0]} // Position text slightly above the sphere
+          <Text3D
+            position={[.4, 2.6, -.02]} // Position text slightly above the sphere
             rotation={[0,- Math.PI, 0]}
-            fontSize={0.2}
-            color="white"
-            anchorX="center"
-            anchorY="middle"
+            fontSize={0.05}
+             font={"/fonts/gt.json"}
+              lineHeight={0.9}
+              letterSpacing={0.3}
+            // color="white"
+            // anchorX="center"
+            // anchorY="middle"
           >
             {number}
-          </Text>
+                 <meshStandardMaterial color="white" map={numberColorMap} />
+          </Text3D>
         )}
 
       </group>
